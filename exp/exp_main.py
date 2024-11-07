@@ -162,52 +162,6 @@ class Exp_Main(Exp_Basic):
                                             pct_start = self.args.pct_start,
                                             epochs = self.args.train_epochs,
                                             max_lr = self.args.learning_rate)
-        '''
-        # cluster parameter initiate
-        # RevIn
-        self.revin = self.args.revin
-        if self.revin: self.revin_layer = RevIN(self.args.enc_in, affine=self.args.affine, subtract_last=self.args.subtract_last)
-
-        # Patching
-        patch_num = int((self.args.seq_len - self.args.patch_len) / self.args.stride + 1)
-        if self.args.padding_patch == 'end':  # can be modified to general case
-            self.padding_patch_layer = nn.ReplicationPad1d((0, self.args.stride))
-            patch_num += 1
-        
-        # 拼接所有数据
-        all_X = []
-        for X_batch, y_batch, x_mark, y_mark in train_loader:
-            # norm
-            if self.revin:
-                # X_batch = X_batch.permute(0, 2, 1)
-                X_batch = self.revin_layer(X_batch, 'norm')
-                X_batch = X_batch.permute(0, 2, 1)
-
-            # do patching
-            if self.args.padding_patch == 'end':
-                X_batch = self.padding_patch_layer(X_batch)
-            X_batch = X_batch.unfold(dimension=-1, size=self.args.patch_len, step=self.args.stride)  # z: [bs x nvars x patch_num x patch_len]
-            X_batch = X_batch.permute(0, 1, 3, 2)  # z: [bs x nvars x patch_len x patch_num]
-            all_X.append(X_batch)
-
-        # 将列表转换为张量
-        all_X = torch.cat(all_X, dim=0)  # all_X: [all samples x nvars x patch_len x patch_num]
-        print(all_X.shape)
-        all_X = torch.reshape(all_X, (all_X.shape[0] * all_X.shape[3], all_X.shape[1] * all_X.shape[2])) # [all patches, nvars * patch_len]
-        print(all_X.shape)
-        all_X = all_X.to(torch.float32)
-        x_bar, hidden = self.model.model.cluster.ae(all_X.to(self.device))
-        kmeans = KMeans(n_clusters=self.args.num_expert, n_init=10)
-
-        # Get clusters from K-means
-        y_pred = kmeans.fit_predict(hidden.data.cpu().numpy())
-        print("Initial Cluster Centers: ", y_pred)
-
-        # Initialize D
-        D = Initialization_D(hidden, y_pred, self.args.num_expert, self.args.d)
-        D = torch.tensor(D).to(torch.float32)
-        self.model.model.cluster.D.data = D.to(self.device)
-        '''
 
         for epoch in range(self.args.train_epochs):
             iter_count = 0
