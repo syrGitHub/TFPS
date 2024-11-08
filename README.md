@@ -15,7 +15,8 @@ You can obtain all the benchmarks from Google Drive (https://drive.google.com/dr
 ## :sparkles: How to Run the Code:
 
 1. Install Python 3.6, PyTorch 1.9.0.
-2. Train the model. We provide the experiment scripts of all benchmarks under the folder ./scripts. Now you can reproduce the experiment results by:
+2. Install requirements. pip install -r requirements.txt
+3. Train the model. We provide the experiment scripts of all benchmarks under the folder ./scripts. Now you can reproduce the experiment results by:
 
 ```javascript
 sh ./scripts/ETTh1.sh
